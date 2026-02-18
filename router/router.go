@@ -16,6 +16,16 @@ func New(s *store.Store) http.Handler {
 	servers := &handlers.ServerHandler{Store: s}
 	messages := &handlers.MessageHandler{Store: s}
 
+	// Servers
+	mux.HandleFunc("POST /servers", servers.Create)
+	mux.HandleFunc("GET /servers/{id}", servers.Get)
+
+	// Posts
+	mux.HandleFunc("POST /servers/{server_id}/posts", posts.Create)
+	mux.HandleFunc("GET /servers/{server_id}/posts/{id}", posts.Get)
+	mux.HandleFunc("PUT /servers/{server_id}/posts/{id}", posts.Update)
+	mux.HandleFunc("DELETE /servers/{server_id}/posts/{id}", posts.Delete)
+
 	// Users
 	mux.HandleFunc("POST /users", users.Create)
 	mux.HandleFunc("GET /users/{id}", users.Get)
@@ -23,16 +33,6 @@ func New(s *store.Store) http.Handler {
 	// Friends
 	mux.HandleFunc("POST /users/{id}/friends", friends.Add)
 	mux.HandleFunc("GET /users/{id}/friends", friends.List)
-
-	// Posts
-	mux.HandleFunc("POST /posts", posts.Create)
-	mux.HandleFunc("GET /posts/{id}", posts.Get)
-	mux.HandleFunc("PATCH /posts/{id}", posts.Update)
-	mux.HandleFunc("DELETE /posts/{id}", posts.Delete)
-
-	// Servers
-	mux.HandleFunc("POST /servers", servers.Create)
-	mux.HandleFunc("GET /servers/{id}", servers.Get)
 
 	// Messages
 	mux.HandleFunc("POST /servers/{server_id}/messages", messages.Create)

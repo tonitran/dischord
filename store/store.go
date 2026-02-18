@@ -98,7 +98,7 @@ func (s *Store) CreatePost(p models.Post) error {
 	return nil
 }
 
-func (s *Store) GetPost(id string) (models.Post, error) {
+func (s *Store) GetPost(server_id, id string) (models.Post, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	p, ok := s.posts[id]
@@ -146,6 +146,11 @@ func (s *Store) GetServer(id string) (models.Server, error) {
 	srv, ok := s.servers[id]
 	if !ok {
 		return models.Server{}, fmt.Errorf("server %s not found", id)
+	}
+	for postID, post := range s.posts {
+		if post.ServerID == id {
+			srv.Posts = append(srv.Posts, postID)
+		}
 	}
 	return srv, nil
 }

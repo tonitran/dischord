@@ -16,6 +16,7 @@ type FriendRequest struct {
 
 type Post struct {
 	ID        string    `json:"id"`
+	ServerID  string    `json:"server_id"`
 	AuthorID  string    `json:"author_id"`
 	Title     string    `json:"title"`
 	Body      string    `json:"body"`
@@ -28,6 +29,7 @@ type Server struct {
 	Name      string    `json:"name"`
 	OwnerID   string    `json:"owner_id"`
 	MemberIDs []string  `json:"member_ids"`
+	Posts     []string  `json:"post_ids"`
 	CreatedAt time.Time `json:"created_at"`
 }
 

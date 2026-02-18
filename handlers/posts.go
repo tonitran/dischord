@@ -14,6 +14,7 @@ type PostHandler struct {
 }
 
 func (h *PostHandler) Create(w http.ResponseWriter, r *http.Request) {
+	server_id := r.PathValue("server_id")
 	var req struct {
 		AuthorID string `json:"author_id"`
 		Title    string `json:"title"`
@@ -31,6 +32,7 @@ func (h *PostHandler) Create(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	post := models.Post{
 		ID:        generateID(),
+		ServerID:  server_id,
 		AuthorID:  req.AuthorID,
 		Title:     req.Title,
 		Body:      req.Body,
@@ -45,8 +47,9 @@ func (h *PostHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) Get(w http.ResponseWriter, r *http.Request) {
+	server_id := r.PathValue("server_id")
 	id := r.PathValue("id")
-	post, err := h.Store.GetPost(id)
+	post, err := h.Store.GetPost(server_id, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -55,8 +58,9 @@ func (h *PostHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *PostHandler) Update(w http.ResponseWriter, r *http.Request) {
+	server_id := r.PathValue("server_id")
 	id := r.PathValue("id")
-	post, err := h.Store.GetPost(id)
+	post, err := h.Store.GetPost(server_id, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
