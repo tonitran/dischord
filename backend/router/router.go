@@ -13,6 +13,7 @@ func New(s *store.Store) http.Handler {
 	users := &handlers.UserHandler{Store: s}
 	friends := &handlers.FriendHandler{Store: s}
 	posts := &handlers.PostHandler{Store: s}
+	votes := &handlers.VoteHandler{Store: s}
 	servers := &handlers.ServerHandler{Store: s}
 	messages := &handlers.MessageHandler{Store: s}
 
@@ -27,8 +28,8 @@ func New(s *store.Store) http.Handler {
 	mux.HandleFunc("DELETE /servers/{server_id}/posts/{id}", posts.Delete)
 
 	// Votes
-	mux.HandleFunc("GET /servers/{server_id}/posts/{id}/vote", posts.GetVote)
-	mux.HandleFunc("PUT /servers/{server_id}/posts/{id}/vote", posts.PutVote)
+	mux.HandleFunc("GET /servers/{server_id}/posts/{id}/vote", votes.GetVote)
+	mux.HandleFunc("PUT /servers/{server_id}/posts/{id}/vote", votes.PutVote)
 
 	// Users
 	mux.HandleFunc("POST /users", users.Create)
