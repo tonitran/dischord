@@ -93,6 +93,9 @@ func TestPostHandler_Get(t *testing.T) {
 		if post.Title != "Hello" {
 			t.Errorf("got title %q, want %q", post.Title, "Hello")
 		}
+		if post.Body != "World" {
+			t.Errorf("got body %q, want %q", post.Body, "World")
+		}
 	})
 
 	t.Run("nonexistent post", func(t *testing.T) {

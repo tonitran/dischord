@@ -11,6 +11,7 @@ type Store struct {
 	mu       sync.RWMutex
 	users    map[string]models.User
 	posts    map[string]models.Post
+	votes    map[string]models.Vote
 	servers  map[string]models.Server
 	messages map[string]models.Message
 	friends  map[string]map[string]bool // userID -> set of friendIDs
@@ -20,6 +21,7 @@ func New() *Store {
 	return &Store{
 		users:    make(map[string]models.User),
 		posts:    make(map[string]models.Post),
+		votes:    make(map[string]models.Vote),
 		servers:  make(map[string]models.Server),
 		messages: make(map[string]models.Message),
 		friends:  make(map[string]map[string]bool),
@@ -105,6 +107,13 @@ func (s *Store) GetPost(server_id, id string) (models.Post, error) {
 	if !ok {
 		return models.Post{}, fmt.Errorf("post %s not found", id)
 	}
+	votes := 0
+	for _, v := range s.votes {
+		if v.PostID == id {
+			votes += v.Vote
+		}
+	}
+	p.Votes = votes
 	return p, nil
 }
 
@@ -115,6 +124,34 @@ func (s *Store) UpdatePost(p models.Post) error {
 		return fmt.Errorf("post %s not found", p.ID)
 	}
 	s.posts[p.ID] = p
+	return nil
+}
+
+func (s *Store) GetVote(post_id string, author_id string) (models.Vote, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	vote_id := post_id + "-" + author_id
+	if _, ok := s.votes[vote_id]; !ok {
+		return models.Vote{}, fmt.Errorf("Vote %s not found", vote_id)
+	}
+	var vote = s.votes[vote_id]
+	return vote, nil
+}
+
+func (s *Store) PostVote(post_id string, author_id string, amount int) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if _, ok := s.posts[post_id]; !ok {
+		return fmt.Errorf("post %s not found", post_id)
+	}
+
+	vote_id := post_id + "-" + author_id
+	newVote := models.Vote{
+		PostID:   post_id,
+		AuthorID: author_id,
+		Vote:     amount,
+	}
+	s.votes[vote_id] = newVote
 	return nil
 }
 

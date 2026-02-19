@@ -81,4 +81,53 @@ func TestServerPostIntegration(t *testing.T) {
 	} else {
 		t.Logf("confirmed post %q is listed in server %q posts", createdPost.ID, fetchedServer.ID)
 	}
+
+	// Step 4: Fetch the post directly and verify body.
+	req = httptest.NewRequest(http.MethodGet,
+		fmt.Sprintf("/servers/%s/posts/%s", createdServer.ID, createdPost.ID), nil)
+	w = httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("get post: got status %d, want %d\nbody: %s", w.Code, http.StatusOK, w.Body.String())
+	}
+	var fetchedPost models.Post
+	if err := json.NewDecoder(w.Body).Decode(&fetchedPost); err != nil {
+		t.Fatalf("get post: failed to decode response: %v", err)
+	}
+	if fetchedPost.Body != "This is the first post." {
+		t.Errorf("get post: got body %q, want %q", fetchedPost.Body, "This is the first post.")
+	}
+	t.Logf("confirmed post body %q", fetchedPost.Body)
+
+	// Step 5: Upvote the post.
+	upvoteBody := `{"author":"user-1","vote":1}`
+	req = httptest.NewRequest(http.MethodPut,
+		fmt.Sprintf("/servers/%s/posts/%s/vote", createdServer.ID, createdPost.ID),
+		strings.NewReader(upvoteBody))
+	w = httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("upvote post: got status %d, want %d\nbody: %s", w.Code, http.StatusOK, w.Body.String())
+	}
+	t.Logf("upvoted post %q", createdPost.ID)
+
+	// Step 6: Fetch the post again and verify the vote count.
+	req = httptest.NewRequest(http.MethodGet,
+		fmt.Sprintf("/servers/%s/posts/%s", createdServer.ID, createdPost.ID), nil)
+	w = httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("get post after vote: got status %d, want %d\nbody: %s", w.Code, http.StatusOK, w.Body.String())
+	}
+	var votedPost models.Post
+	if err := json.NewDecoder(w.Body).Decode(&votedPost); err != nil {
+		t.Fatalf("get post after vote: failed to decode response: %v", err)
+	}
+	if votedPost.Votes != 1 {
+		t.Errorf("get post after vote: got votes %d, want 1", votedPost.Votes)
+	}
+	t.Logf("confirmed post %q has %d vote(s)", createdPost.ID, votedPost.Votes)
 }

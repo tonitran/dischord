@@ -24,8 +24,8 @@ func (h *PostHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
-	if req.AuthorID == "" || req.Title == "" {
-		http.Error(w, "author_id and title are required", http.StatusBadRequest)
+	if req.AuthorID == "" || req.Title == "" || req.Body == "" {
+		http.Error(w, "author_id, title, and body are required", http.StatusBadRequest)
 		return
 	}
 
@@ -36,6 +36,7 @@ func (h *PostHandler) Create(w http.ResponseWriter, r *http.Request) {
 		AuthorID:  req.AuthorID,
 		Title:     req.Title,
 		Body:      req.Body,
+		Votes:     0,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
@@ -85,6 +86,55 @@ func (h *PostHandler) Update(w http.ResponseWriter, r *http.Request) {
 	if err := h.Store.UpdatePost(post); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+	writeJSON(w, http.StatusOK, post)
+}
+
+func (h *PostHandler) GetVote(w http.ResponseWriter, r *http.Request) {
+	post_id := r.PathValue("id")
+
+	var req struct {
+		Author string `json:"author"`
+		Vote   int    `json:"vote"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	vote, err := h.Store.GetVote(post_id, req.Author)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, vote)
+}
+
+func (h *PostHandler) PutVote(w http.ResponseWriter, r *http.Request) {
+	server_id := r.PathValue("server_id")
+	post_id := r.PathValue("id")
+	post, err := h.Store.GetPost(server_id, post_id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	var req struct {
+		Author string `json:"author"`
+		Vote   int    `json:"vote"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	vote, _ := h.Store.GetVote(post_id, req.Author)
+	if req.Author != "" && req.Vote >= -1 && req.Vote <= 1 && req.Vote != vote.Vote {
+		if err := h.Store.PostVote(post_id, req.Author, req.Vote); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 	writeJSON(w, http.StatusOK, post)
 }

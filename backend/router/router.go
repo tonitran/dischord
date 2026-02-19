@@ -26,6 +26,10 @@ func New(s *store.Store) http.Handler {
 	mux.HandleFunc("PUT /servers/{server_id}/posts/{id}", posts.Update)
 	mux.HandleFunc("DELETE /servers/{server_id}/posts/{id}", posts.Delete)
 
+	// Votes
+	mux.HandleFunc("GET /servers/{server_id}/posts/{id}/vote", posts.GetVote)
+	mux.HandleFunc("PUT /servers/{server_id}/posts/{id}/vote", posts.PutVote)
+
 	// Users
 	mux.HandleFunc("POST /users", users.Create)
 	mux.HandleFunc("GET /users/{id}", users.Get)

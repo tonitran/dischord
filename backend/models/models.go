@@ -20,8 +20,15 @@ type Post struct {
 	AuthorID  string    `json:"author_id"`
 	Title     string    `json:"title"`
 	Body      string    `json:"body"`
+	Votes     int       `json:"votes"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Vote struct {
+	PostID   string `json:"post_id"`
+	AuthorID string `json:"author_id"`
+	Vote     int    `json:"vote"`
 }
 
 type Server struct {
