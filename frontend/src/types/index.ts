@@ -1,12 +1,12 @@
 export interface User {
-  id: string
+  user_id: string
   username: string
   email: string
   created_at: string
 }
 
 export interface Server {
-  id: string
+  server_id: string
   name: string
   owner_id: string
   member_ids: string[]
@@ -15,7 +15,7 @@ export interface Server {
 }
 
 export interface Post {
-  id: string
+  post_id: string
   server_id: string
   author_id: string
   title: string
@@ -25,7 +25,7 @@ export interface Post {
 }
 
 export interface Message {
-  id: string
+  message_id: string
   server_id: string
   author_id: string
   content: string

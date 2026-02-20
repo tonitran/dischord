@@ -18,7 +18,7 @@ export default function PostCard({ post, currentUser, author, onUpdated, onDelet
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  const isOwn = post.author_id === currentUser.id
+  const isOwn = post.author_id === currentUser.user_id
   const authorName = author?.username ?? 'Unknown'
   const wasEdited = post.updated_at !== post.created_at
 
@@ -26,7 +26,7 @@ export default function PostCard({ post, currentUser, author, onUpdated, onDelet
     if (!editTitle.trim()) return
     setSaving(true)
     try {
-      const updated = await api.updatePost(post.server_id, post.id, editTitle.trim(), editBody.trim())
+      const updated = await api.updatePost(post.server_id, post.post_id, editTitle.trim(), editBody.trim())
       onUpdated(updated)
       setEditing(false)
     } finally {
@@ -38,8 +38,8 @@ export default function PostCard({ post, currentUser, author, onUpdated, onDelet
     if (!confirm('Delete this post?')) return
     setDeleting(true)
     try {
-      await api.deletePost(post.server_id, post.id)
-      onDeleted(post.id)
+      await api.deletePost(post.server_id, post.post_id)
+      onDeleted(post.post_id)
     } finally {
       setDeleting(false)
     }

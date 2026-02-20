@@ -31,14 +31,14 @@ export default function App() {
 
   const handleLogin = (user: User) => {
     setCurrentUser(user)
-    localStorage.setItem('dischord_user_id', user.id)
+    localStorage.setItem('dischord_user_id', user.user_id)
   }
 
   const handleServerCreated = (server: Server) => {
-    const newIds = [...serverIds, server.id]
+    const newIds = [...serverIds, server.server_id]
     setServerIds(newIds)
     localStorage.setItem('dischord_server_ids', JSON.stringify(newIds))
-    setCurrentServerId(server.id)
+    setCurrentServerId(server.server_id)
     setView('posts')
     setShowCreateServer(false)
   }

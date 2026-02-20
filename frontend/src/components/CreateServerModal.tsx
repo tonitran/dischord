@@ -19,7 +19,7 @@ export default function CreateServerModal({ currentUser, onCreated, onClose }: P
     setError('')
     setLoading(true)
     try {
-      const server = await api.createServer(name.trim(), currentUser.id)
+      const server = await api.createServer(name.trim(), currentUser.user_id)
       onCreated(server)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create server')

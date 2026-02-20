@@ -21,7 +21,7 @@ export default function CreatePostModal({ serverId, currentUser, onCreated, onCl
     setError('')
     setLoading(true)
     try {
-      const post = await api.createPost(serverId, currentUser.id, title.trim(), body.trim())
+      const post = await api.createPost(serverId, currentUser.user_id, title.trim(), body.trim())
       onCreated(post)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create post')

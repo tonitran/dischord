@@ -30,8 +30,8 @@ export default function Sidebar({
   const [serverError, setServerError] = useState('')
 
   useEffect(() => {
-    api.getFriends(currentUser.id).then(setFriends).catch(() => {})
-  }, [currentUser.id])
+    api.getFriends(currentUser.user_id).then(setFriends).catch(() => {})
+  }, [currentUser.user_id])
 
   useEffect(() => {
     if (serverIds.length === 0) { setServers([]); return }
@@ -43,8 +43,8 @@ export default function Sidebar({
     e.preventDefault()
     setFriendError('')
     try {
-      await api.addFriend(currentUser.id, friendInput.trim())
-      const updated = await api.getFriends(currentUser.id)
+      await api.addFriend(currentUser.user_id, friendInput.trim())
+      const updated = await api.getFriends(currentUser.user_id)
       setFriends(updated)
       setFriendInput('')
       setShowAddFriend(false)
@@ -67,7 +67,7 @@ export default function Sidebar({
   }
 
   const handleCopyId = () => {
-    navigator.clipboard.writeText(currentUser.id)
+    navigator.clipboard.writeText(currentUser.user_id)
   }
 
   return (
@@ -113,7 +113,7 @@ export default function Sidebar({
         <div className="px-2 max-h-44 overflow-y-auto space-y-0.5">
           {friends.map(friend => (
             <div
-              key={friend.id}
+              key={friend.user_id}
               className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[#35373c] cursor-pointer group"
             >
               <div className="relative">
@@ -185,10 +185,10 @@ export default function Sidebar({
         <div className="px-2 space-y-0.5 pb-2">
           {servers.map(server => (
             <button
-              key={server.id}
-              onClick={() => onSelectServer(server.id)}
+              key={server.server_id}
+              onClick={() => onSelectServer(server.server_id)}
               className={`w-full flex items-center gap-2.5 px-2 py-2 rounded-md text-left transition-colors ${
-                currentServerId === server.id
+                currentServerId === server.server_id
                   ? 'bg-[#404249] text-white'
                   : 'text-[#949ba4] hover:bg-[#35373c] hover:text-white'
               }`}

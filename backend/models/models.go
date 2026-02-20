@@ -3,7 +3,7 @@ package models
 import "time"
 
 type User struct {
-	ID        string    `json:"id"`
+	ID        string    `json:"user_id"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	CreatedAt time.Time `json:"created_at"`
@@ -15,7 +15,7 @@ type FriendRequest struct {
 }
 
 type Post struct {
-	ID        string    `json:"id"`
+	ID        string    `json:"post_id"`
 	ServerID  string    `json:"server_id"`
 	AuthorID  string    `json:"author_id"`
 	Title     string    `json:"title"`
@@ -32,7 +32,7 @@ type Vote struct {
 }
 
 type Server struct {
-	ID        string    `json:"id"`
+	ID        string    `json:"server_id"`
 	Name      string    `json:"name"`
 	OwnerID   string    `json:"owner_id"`
 	MemberIDs []string  `json:"member_ids"`
@@ -41,7 +41,7 @@ type Server struct {
 }
 
 type Message struct {
-	ID        string    `json:"id"`
+	ID        string    `json:"message_id"`
 	ServerID  string    `json:"server_id"`
 	AuthorID  string    `json:"author_id"`
 	Content   string    `json:"content"`

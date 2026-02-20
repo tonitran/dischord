@@ -93,7 +93,7 @@ export default function ServerView({ serverId, currentUser, view, onSetView }: P
     if (!messageInput.trim() || sendingMsg) return
     setSendingMsg(true)
     try {
-      const msg: Message = await api.createMessage(serverId, currentUser.id, messageInput.trim())
+      const msg: Message = await api.createMessage(serverId, currentUser.user_id, messageInput.trim())
       setMessages(prev => [...prev, msg])
       setMessageInput('')
       await ensureUser(msg.author_id)
@@ -109,11 +109,11 @@ export default function ServerView({ serverId, currentUser, view, onSetView }: P
   }
 
   const handlePostUpdated = (post: Post) => {
-    setPosts(prev => prev.map(p => p.id === post.id ? post : p))
+    setPosts(prev => prev.map(p => p.post_id === post.post_id ? post : p))
   }
 
   const handlePostDeleted = (postId: string) => {
-    setPosts(prev => prev.filter(p => p.id !== postId))
+    setPosts(prev => prev.filter(p => p.post_id !== postId))
   }
 
   if (loading) {
@@ -173,7 +173,7 @@ export default function ServerView({ serverId, currentUser, view, onSetView }: P
           </span>
           {/* Share server ID */}
           <button
-            onClick={() => { navigator.clipboard.writeText(server.id) }}
+            onClick={() => { navigator.clipboard.writeText(server.server_id) }}
             className="text-xs text-[#949ba4] hover:text-white flex items-center gap-1 px-2 py-1 hover:bg-[#35373c] rounded transition-colors"
             title="Copy server ID to share"
           >
@@ -214,7 +214,7 @@ export default function ServerView({ serverId, currentUser, view, onSetView }: P
           ) : (
             posts.map(post => (
               <PostCard
-                key={post.id}
+                key={post.post_id}
                 post={post}
                 currentUser={currentUser}
                 author={userCache[post.author_id]}
@@ -235,13 +235,13 @@ export default function ServerView({ serverId, currentUser, view, onSetView }: P
           ) : (
             messages.map((msg, i) => {
               const author = userCache[msg.author_id]
-              const isOwn = msg.author_id === currentUser.id
+              const isOwn = msg.author_id === currentUser.user_id
               const prevMsg = messages[i - 1]
               const grouped = prevMsg && prevMsg.author_id === msg.author_id
 
               return (
                 <div
-                  key={msg.id}
+                  key={msg.message_id}
                   className={`flex items-start gap-3 ${grouped ? 'mt-0.5' : 'mt-4'}`}
                 >
                   {grouped ? (
