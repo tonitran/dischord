@@ -50,3 +50,34 @@ func (h *ServerHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, http.StatusOK, srv)
 }
+
+func (h *ServerHandler) Join(w http.ResponseWriter, r *http.Request) {
+	serverID := r.PathValue("id")
+
+	var req struct {
+		UserID string `json:"user_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	if req.UserID == "" {
+		http.Error(w, "user_id is required", http.StatusBadRequest)
+		return
+	}
+	if err := h.Store.JoinServer(serverID, req.UserID); err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"status": "joined"})
+}
+
+func (h *ServerHandler) ListMembers(w http.ResponseWriter, r *http.Request) {
+	serverID := r.PathValue("id")
+	members, err := h.Store.GetServerMembers(serverID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	writeJSON(w, http.StatusOK, members)
+}

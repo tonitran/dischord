@@ -77,13 +77,18 @@ func ApplySchema(db *sql.DB) error {
 			content    TEXT NOT NULL DEFAULT '',
 			created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 		);
+		CREATE TABLE IF NOT EXISTS server_user (
+			server_id TEXT NOT NULL REFERENCES servers(id),
+			user_id   TEXT NOT NULL REFERENCES users(id),
+			PRIMARY KEY (server_id, user_id)
+		);
 	`)
 	return err
 }
 
 // TruncateAll removes all rows from every table. Intended for use in tests.
 func TruncateAll(db *sql.DB) error {
-	_, err := db.Exec(`TRUNCATE TABLE messages, votes, posts, friends, servers, users`)
+	_, err := db.Exec(`TRUNCATE TABLE server_user, messages, votes, posts, friends, servers, users`)
 	return err
 }
 
@@ -280,6 +285,55 @@ func (s *Store) GetServer(id string) (models.Server, error) {
 		srv.Posts = append(srv.Posts, postID)
 	}
 	return srv, rows.Err()
+}
+
+// --- Server Members ---
+
+func (s *Store) JoinServer(serverID, userID string) error {
+	var count int
+	if err := s.db.QueryRow(
+		`SELECT COUNT(*) FROM servers WHERE id = $1`, serverID,
+	).Scan(&count); err != nil {
+		return err
+	}
+	if count == 0 {
+		return fmt.Errorf("server %s not found", serverID)
+	}
+	if err := s.db.QueryRow(
+		`SELECT COUNT(*) FROM users WHERE id = $1`, userID,
+	).Scan(&count); err != nil {
+		return err
+	}
+	if count == 0 {
+		return fmt.Errorf("user %s not found", userID)
+	}
+	_, err := s.db.Exec(
+		`INSERT INTO server_user (server_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+		serverID, userID,
+	)
+	return err
+}
+
+func (s *Store) GetServerMembers(serverID string) ([]models.User, error) {
+	rows, err := s.db.Query(`
+		SELECT u.id, u.username, u.email, u.created_at
+		FROM users u
+		JOIN server_user su ON su.user_id = u.id
+		WHERE su.server_id = $1
+	`, serverID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var members []models.User
+	for rows.Next() {
+		var u models.User
+		if err := rows.Scan(&u.ID, &u.Username, &u.Email, &u.CreatedAt); err != nil {
+			return nil, err
+		}
+		members = append(members, u)
+	}
+	return members, rows.Err()
 }
 
 // --- Messages ---

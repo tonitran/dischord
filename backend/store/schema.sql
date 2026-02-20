@@ -37,6 +37,12 @@ CREATE TABLE IF NOT EXISTS friends (
     PRIMARY KEY (user_id, friend_id)
 );
 
+CREATE TABLE IF NOT EXISTS server_user (
+    server_id TEXT NOT NULL REFERENCES servers(id),
+    user_id   TEXT NOT NULL REFERENCES users(id),
+    PRIMARY KEY (server_id, user_id)
+);
+
 CREATE TABLE IF NOT EXISTS messages (
     id         TEXT PRIMARY KEY,
     server_id  TEXT NOT NULL DEFAULT '',

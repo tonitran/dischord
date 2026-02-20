@@ -20,6 +20,8 @@ func New(s *store.Store) http.Handler {
 	// Servers
 	mux.HandleFunc("POST /servers", servers.Create)
 	mux.HandleFunc("GET /servers/{id}", servers.Get)
+	mux.HandleFunc("POST /servers/{id}/members", servers.Join)
+	mux.HandleFunc("GET /servers/{id}/members", servers.ListMembers)
 
 	// Posts
 	mux.HandleFunc("POST /servers/{server_id}/posts", posts.Create)
