@@ -24,7 +24,8 @@ func setupServersTest(t *testing.T) (*store.Store, *http.ServeMux) {
 }
 
 func TestServerHandler_Create(t *testing.T) {
-	_, mux := setupServersTest(t)
+	s, mux := setupServersTest(t)
+	s.CreateUser(models.User{ID: "u1", Username: "alice", Email: "a@example.com"})
 
 	tests := []struct {
 		name       string

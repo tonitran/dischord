@@ -38,6 +38,10 @@ func (h *ServerHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusConflict)
 		return
 	}
+	if err := h.Store.JoinServer(srv.ID, srv.OwnerID); err != nil {
+		http.Error(w, err.Error(), http.StatusConflict)
+		return
+	}
 	writeJSON(w, http.StatusCreated, srv)
 }
 

@@ -16,6 +16,11 @@ func TestServerPostIntegration(t *testing.T) {
 	s := testStore(t)
 	handler := router.New(s)
 
+	// Step 0: Seed the owner user required by the FK constraint on server_user.
+	if err := s.CreateUser(models.User{ID: "user-1", Username: "user1", Email: "user1@example.com"}); err != nil {
+		t.Fatalf("seed user: %v", err)
+	}
+
 	// Step 1: Create a server.
 	createServerBody := `{"name":"test-server","owner_id":"user-1"}`
 	req := httptest.NewRequest(http.MethodPost, "/servers", strings.NewReader(createServerBody))

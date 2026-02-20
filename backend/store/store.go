@@ -284,7 +284,23 @@ func (s *Store) GetServer(id string) (models.Server, error) {
 		}
 		srv.Posts = append(srv.Posts, postID)
 	}
-	return srv, rows.Err()
+	if err := rows.Err(); err != nil {
+		return models.Server{}, err
+	}
+
+	memberRows, err := s.db.Query(`SELECT user_id FROM server_user WHERE server_id = $1`, id)
+	if err != nil {
+		return models.Server{}, err
+	}
+	defer memberRows.Close()
+	for memberRows.Next() {
+		var memberID string
+		if err := memberRows.Scan(&memberID); err != nil {
+			return models.Server{}, err
+		}
+		srv.MemberIDs = append(srv.MemberIDs, memberID)
+	}
+	return srv, memberRows.Err()
 }
 
 // --- Server Members ---
