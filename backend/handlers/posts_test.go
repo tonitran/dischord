@@ -11,8 +11,8 @@ import (
 	"github.com/tonitran/dischord/store"
 )
 
-func setupPostsTest() (*store.Store, *http.ServeMux) {
-	s := store.New()
+func setupPostsTest(t *testing.T) (*store.Store, *http.ServeMux) {
+	s := testStore(t)
 	h := &PostHandler{Store: s}
 
 	mux := http.NewServeMux()
@@ -24,7 +24,7 @@ func setupPostsTest() (*store.Store, *http.ServeMux) {
 }
 
 func TestPostHandler_Create(t *testing.T) {
-	_, mux := setupPostsTest()
+	_, mux := setupPostsTest(t)
 
 	tests := []struct {
 		name       string
@@ -77,7 +77,7 @@ func TestPostHandler_Create(t *testing.T) {
 }
 
 func TestPostHandler_Get(t *testing.T) {
-	s, mux := setupPostsTest()
+	s, mux := setupPostsTest(t)
 	s.CreatePost(models.Post{ID: "p1", AuthorID: "u1", Title: "Hello", Body: "World"})
 
 	t.Run("existing post", func(t *testing.T) {
@@ -110,7 +110,7 @@ func TestPostHandler_Get(t *testing.T) {
 }
 
 func TestPostHandler_Update(t *testing.T) {
-	s, mux := setupPostsTest()
+	s, mux := setupPostsTest(t)
 	s.CreatePost(models.Post{ID: "p1", AuthorID: "u1", Title: "Hello", Body: "World"})
 
 	t.Run("update title", func(t *testing.T) {
@@ -168,7 +168,7 @@ func TestPostHandler_Update(t *testing.T) {
 }
 
 func TestPostHandler_Delete(t *testing.T) {
-	s, mux := setupPostsTest()
+	s, mux := setupPostsTest(t)
 	s.CreatePost(models.Post{ID: "p1", AuthorID: "u1", Title: "Hello"})
 
 	t.Run("existing post", func(t *testing.T) {

@@ -11,8 +11,8 @@ import (
 	"github.com/tonitran/dischord/store"
 )
 
-func setupFriendsTest() (*store.Store, *http.ServeMux) {
-	s := store.New()
+func setupFriendsTest(t *testing.T) (*store.Store, *http.ServeMux) {
+	s := testStore(t)
 	h := &FriendHandler{Store: s}
 
 	s.CreateUser(models.User{ID: "u1", Username: "alice", Email: "a@example.com"})
@@ -25,7 +25,7 @@ func setupFriendsTest() (*store.Store, *http.ServeMux) {
 }
 
 func TestFriendHandler_Add(t *testing.T) {
-	_, mux := setupFriendsTest()
+	_, mux := setupFriendsTest(t)
 
 	tests := []struct {
 		name       string
@@ -73,7 +73,7 @@ func TestFriendHandler_Add(t *testing.T) {
 }
 
 func TestFriendHandler_List(t *testing.T) {
-	s, mux := setupFriendsTest()
+	s, mux := setupFriendsTest(t)
 	s.AddFriend("u1", "u2")
 
 	t.Run("user with friends", func(t *testing.T) {

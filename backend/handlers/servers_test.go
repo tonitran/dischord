@@ -11,8 +11,8 @@ import (
 	"github.com/tonitran/dischord/store"
 )
 
-func setupServersTest() (*store.Store, *http.ServeMux) {
-	s := store.New()
+func setupServersTest(t *testing.T) (*store.Store, *http.ServeMux) {
+	s := testStore(t)
 	h := &ServerHandler{Store: s}
 
 	mux := http.NewServeMux()
@@ -22,7 +22,7 @@ func setupServersTest() (*store.Store, *http.ServeMux) {
 }
 
 func TestServerHandler_Create(t *testing.T) {
-	_, mux := setupServersTest()
+	_, mux := setupServersTest(t)
 
 	tests := []struct {
 		name       string
@@ -78,7 +78,7 @@ func TestServerHandler_Create(t *testing.T) {
 }
 
 func TestServerHandler_Get(t *testing.T) {
-	s, mux := setupServersTest()
+	s, mux := setupServersTest(t)
 	s.CreateServer(models.Server{ID: "s1", Name: "general", OwnerID: "u1", MemberIDs: []string{"u1"}})
 
 	t.Run("existing server", func(t *testing.T) {

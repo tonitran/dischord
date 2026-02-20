@@ -10,11 +10,10 @@ import (
 
 	"github.com/tonitran/dischord/models"
 	"github.com/tonitran/dischord/router"
-	"github.com/tonitran/dischord/store"
 )
 
 func TestServerPostIntegration(t *testing.T) {
-	s := store.New()
+	s := testStore(t)
 	handler := router.New(s)
 
 	// Step 1: Create a server.

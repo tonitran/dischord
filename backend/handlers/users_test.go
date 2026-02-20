@@ -8,11 +8,10 @@ import (
 	"testing"
 
 	"github.com/tonitran/dischord/models"
-	"github.com/tonitran/dischord/store"
 )
 
 func TestUserHandler_Create(t *testing.T) {
-	h := &UserHandler{Store: store.New()}
+	h := &UserHandler{Store: testStore(t)}
 
 	tests := []struct {
 		name       string
@@ -68,7 +67,7 @@ func TestUserHandler_Create(t *testing.T) {
 }
 
 func TestUserHandler_Get(t *testing.T) {
-	s := store.New()
+	s := testStore(t)
 	h := &UserHandler{Store: s}
 
 	user := models.User{ID: "u1", Username: "alice", Email: "alice@example.com"}

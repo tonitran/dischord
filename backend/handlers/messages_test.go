@@ -11,8 +11,8 @@ import (
 	"github.com/tonitran/dischord/store"
 )
 
-func setupMessagesTest() (*store.Store, *http.ServeMux) {
-	s := store.New()
+func setupMessagesTest(t *testing.T) (*store.Store, *http.ServeMux) {
+	s := testStore(t)
 	h := &MessageHandler{Store: s}
 
 	s.CreateServer(models.Server{ID: "s1", Name: "test-server", OwnerID: "u1", MemberIDs: []string{"u1"}})
@@ -24,7 +24,7 @@ func setupMessagesTest() (*store.Store, *http.ServeMux) {
 }
 
 func TestMessageHandler_Create(t *testing.T) {
-	_, mux := setupMessagesTest()
+	_, mux := setupMessagesTest(t)
 
 	tests := []struct {
 		name       string
@@ -91,7 +91,7 @@ func TestMessageHandler_Create(t *testing.T) {
 }
 
 func TestMessageHandler_ListByServer(t *testing.T) {
-	s, mux := setupMessagesTest()
+	s, mux := setupMessagesTest(t)
 
 	s.CreateMessage(models.Message{ID: "m1", ServerID: "s1", AuthorID: "u1", Content: "hello"})
 	s.CreateMessage(models.Message{ID: "m2", ServerID: "s1", AuthorID: "u1", Content: "world"})
