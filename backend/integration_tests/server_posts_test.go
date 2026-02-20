@@ -20,6 +20,9 @@ func TestServerPostIntegration(t *testing.T) {
 	if err := s.CreateUser(models.User{ID: "user-1", Username: "user1", Email: "user1@example.com"}); err != nil {
 		t.Fatalf("seed user: %v", err)
 	}
+	if err := s.CreateUser(models.User{ID: "user-2", Username: "user2", Email: "user2@example.com"}); err != nil {
+		t.Fatalf("seed user-2: %v", err)
+	}
 
 	// Step 1: Create a server.
 	createServerBody := `{"name":"test-server","owner_id":"user-1"}`
@@ -117,6 +120,19 @@ func TestServerPostIntegration(t *testing.T) {
 	}
 	t.Logf("upvoted post %q", createdPost.ID)
 
+	// Step 5b: Second user also upvotes the post.
+	upvoteBody2 := `{"author":"user-2","vote":1}`
+	req = httptest.NewRequest(http.MethodPut,
+		fmt.Sprintf("/servers/%s/posts/%s/vote", createdServer.ID, createdPost.ID),
+		strings.NewReader(upvoteBody2))
+	w = httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("upvote post (user-2): got status %d, want %d\nbody: %s", w.Code, http.StatusOK, w.Body.String())
+	}
+	t.Logf("user-2 upvoted post %q", createdPost.ID)
+
 	// Step 6: Fetch the post again and verify the vote count.
 	req = httptest.NewRequest(http.MethodGet,
 		fmt.Sprintf("/servers/%s/posts/%s", createdServer.ID, createdPost.ID), nil)
@@ -130,8 +146,8 @@ func TestServerPostIntegration(t *testing.T) {
 	if err := json.NewDecoder(w.Body).Decode(&votedPost); err != nil {
 		t.Fatalf("get post after vote: failed to decode response: %v", err)
 	}
-	if votedPost.Votes != 1 {
-		t.Errorf("get post after vote: got votes %d, want 1", votedPost.Votes)
+	if votedPost.Votes != 2 {
+		t.Errorf("get post after vote: got votes %d, want 2", votedPost.Votes)
 	}
 	t.Logf("confirmed post %q has %d vote(s)", createdPost.ID, votedPost.Votes)
 }
