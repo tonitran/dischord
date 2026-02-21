@@ -1,0 +1,114 @@
+# Dischord
+
+A Discord-like forum and chat app built with Go and React. Users can create servers, post threads with voting, and chat in real time.
+
+![Dischord screenshot](screenshots/WIP-1.png)
+
+## Prerequisites
+
+- Go 1.22+
+- Node.js (18+) and npm
+- PostgreSQL
+
+## Database Setup
+
+Create the database:
+
+```bash
+createdb dischord
+```
+
+The schema is applied automatically when the backend starts (`store.ApplySchema()` is idempotent, so it's safe to run repeatedly).
+
+For tests, create a separate test database:
+
+```bash
+createdb dischord_test
+```
+
+## Backend
+
+```bash
+cd backend
+go run main.go
+```
+
+Runs on `:8080`. The default database URL is `postgres://localhost/dischord?sslmode=disable`. Override with the `DATABASE_URL` env var:
+
+```bash
+DATABASE_URL="postgres://user:pass@host/dischord?sslmode=disable" go run main.go
+```
+
+## Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Runs on `:5173`. Vite proxies all `/api/*` requests to the backend at `:8080` (stripping the `/api` prefix).
+
+## Running Tests
+
+All backend tests require a test database. Set `TEST_DATABASE_URL` before running:
+
+```bash
+# Run all tests
+cd backend
+TEST_DATABASE_URL="postgres://localhost/dischord_test?sslmode=disable" go test ./...
+
+# Run a specific package
+TEST_DATABASE_URL="..." go test -v ./handlers
+TEST_DATABASE_URL="..." go test -v ./integration_tests
+
+# Run a single test function
+TEST_DATABASE_URL="..." go test -v ./handlers -run TestCreateUser
+```
+
+## Architecture
+
+### Backend
+
+Built on Go stdlib (`net/http`) with no framework. Uses `lib/pq` for Postgres.
+
+| Layer | File | Responsibility |
+|---|---|---|
+| Entry point | `main.go` | Reads env, opens store, starts router |
+| Store | `store/store.go` | All SQL queries; `ApplySchema()` on startup |
+| Router | `router/router.go` | Maps HTTP method+path patterns to handlers |
+| Handlers | `handlers/` | One file per resource |
+| Models | `models/models.go` | Shared structs |
+
+### API Routes
+
+| Method | Path | Description |
+|---|---|---|
+| POST | `/users` | Create user |
+| GET | `/users/{id}` | Get user |
+| POST | `/users/{id}/friends` | Add friend |
+| GET | `/users/{id}/friends` | List friends |
+| POST | `/servers` | Create server |
+| GET | `/servers/{id}` | Get server (includes `post_ids`) |
+| POST | `/servers/{sid}/posts` | Create post |
+| GET | `/servers/{sid}/posts/{id}` | Get post (includes aggregate `votes`) |
+| PUT | `/servers/{sid}/posts/{id}` | Edit post |
+| DELETE | `/servers/{sid}/posts/{id}` | Delete post |
+| POST | `/servers/{sid}/messages` | Send message |
+| GET | `/servers/{sid}/messages` | List messages |
+| POST | `/posts/{id}/votes` | Cast vote |
+| GET | `/posts/{id}/votes/{author_id}` | Get user's vote |
+
+> **Note:** There is no authentication layer. `author_id` and `owner_id` are trusted values passed in request bodies.
+
+### Frontend
+
+React 18 + TypeScript + Tailwind CSS, bundled with Vite.
+
+- `App.tsx` — top-level state (current user, server list, selected server, active tab)
+- `api/client.ts` — thin `fetch` wrapper using base path `/api`
+- `components/Sidebar.tsx` — friends list, servers list, user panel
+- `components/ServerView.tsx` — posts and messages tabs for a server
+- `components/PostCard.tsx` — post display with up/neutral/down voting
+
+User ID and joined server IDs are persisted to `localStorage`.
