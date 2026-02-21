@@ -49,8 +49,9 @@ export default function ServerView({ serverId, currentUser, view, onSetView }: P
         setPosts(validPosts)
         setMessages(msgs ?? [])
 
-        // Prefetch all unique authors
+        // Prefetch all unique authors + members
         const authorIds = new Set<string>([
+          ...s.member_ids,
           ...validPosts.map(p => p.author_id),
           ...(msgs ?? []).map((m: Message) => m.author_id),
         ])
@@ -218,96 +219,131 @@ export default function ServerView({ serverId, currentUser, view, onSetView }: P
         </div>
       </header>
 
-      {/* ── Content ── */}
-      {view === 'posts' ? (
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {posts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center py-16">
-              <div className="text-5xl mb-4">📋</div>
-              <div className="text-[#b5bac1] font-medium mb-1">No posts yet</div>
-              <div className="text-[#6d6f78] text-sm">Be the first to post something!</div>
+      {/* ── Body row: content + members panel ── */}
+      <div className="flex-1 flex overflow-hidden">
+
+        {/* ── Content + Compose ── */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {view === 'posts' ? (
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {posts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center py-16">
+                  <div className="text-5xl mb-4">📋</div>
+                  <div className="text-[#b5bac1] font-medium mb-1">No posts yet</div>
+                  <div className="text-[#6d6f78] text-sm">Be the first to post something!</div>
+                  <button
+                    onClick={() => setShowCreatePost(true)}
+                    className="mt-4 bg-[#5865f2] text-white px-4 py-2 rounded-md text-sm hover:bg-[#4752c4] transition-colors"
+                  >
+                    Create Post
+                  </button>
+                </div>
+              ) : (
+                posts.map(post => (
+                  <PostCard
+                    key={post.post_id}
+                    post={post}
+                    currentUser={currentUser}
+                    author={userCache[post.author_id]}
+                    onUpdated={handlePostUpdated}
+                    onDeleted={handlePostDeleted}
+                  />
+                ))
+              )}
+            </div>
+          ) : (
+            <div className="flex-1 overflow-y-auto p-4 space-y-1">
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center py-16">
+                  <div className="text-5xl mb-4">💬</div>
+                  <div className="text-[#b5bac1] font-medium mb-1">No messages yet</div>
+                  <div className="text-[#6d6f78] text-sm">Be the first to say something!</div>
+                </div>
+              ) : (
+                messages.map(msg => {
+                  const author = userCache[msg.author_id]
+                  const initial = author ? author.username[0].toUpperCase() : '?'
+                  const name = author ? author.username : msg.author_id.slice(0, 8)
+                  const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                  return (
+                    <div key={msg.message_id} className="flex items-start gap-3 px-2 py-1 rounded hover:bg-[#2e3035] group">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#5865f2] flex items-center justify-center text-white text-sm font-bold">
+                        {initial}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-[#f2f3f5] text-sm font-medium">{name}</span>
+                          <span className="text-[#4e5058] text-xs">{time}</span>
+                        </div>
+                        <div className="text-[#dcddde] text-sm break-words">{msg.content}</div>
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+
+          {/* ── Compose / Message bar ── */}
+          <div className="flex-shrink-0 px-4 pb-4 pt-2">
+            {view === 'posts' ? (
               <button
                 onClick={() => setShowCreatePost(true)}
-                className="mt-4 bg-[#5865f2] text-white px-4 py-2 rounded-md text-sm hover:bg-[#4752c4] transition-colors"
+                className="w-full bg-[#383a40] text-[#6d6f78] rounded-lg px-4 py-2.5 text-left hover:bg-[#404249] transition-colors text-sm"
               >
-                Create Post
+                Create a new post...
               </button>
-            </div>
-          ) : (
-            posts.map(post => (
-              <PostCard
-                key={post.post_id}
-                post={post}
-                currentUser={currentUser}
-                author={userCache[post.author_id]}
-                onUpdated={handlePostUpdated}
-                onDeleted={handlePostDeleted}
-              />
-            ))
-          )}
+            ) : (
+              <form onSubmit={handleSendMessage} className="flex items-center gap-2 bg-[#383a40] rounded-full px-4 py-2">
+                <input
+                  value={messageInput}
+                  onChange={e => setMessageInput(e.target.value)}
+                  placeholder="Type a message..."
+                  className="flex-1 bg-transparent text-[#dcddde] placeholder-[#6d6f78] text-sm outline-none"
+                />
+                <button
+                  type="submit"
+                  disabled={sendingMsg || !messageInput.trim()}
+                  className="flex-shrink-0 w-7 h-7 bg-[#5865f2] hover:bg-[#4752c4] disabled:opacity-40 disabled:cursor-not-allowed rounded-full flex items-center justify-center transition-colors"
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-white">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                  </svg>
+                </button>
+              </form>
+            )}
+          </div>
         </div>
-      ) : (
-        <div className="flex-1 overflow-y-auto p-4 space-y-1">
-          {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center py-16">
-              <div className="text-5xl mb-4">💬</div>
-              <div className="text-[#b5bac1] font-medium mb-1">No messages yet</div>
-              <div className="text-[#6d6f78] text-sm">Be the first to say something!</div>
-            </div>
-          ) : (
-            messages.map(msg => {
-              const author = userCache[msg.author_id]
-              const initial = author ? author.username[0].toUpperCase() : '?'
-              const name = author ? author.username : msg.author_id.slice(0, 8)
-              const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+
+        {/* ── Members panel ── */}
+        <aside className="w-48 flex-shrink-0 border-l border-[#1e1f22] bg-[#2b2d31] overflow-y-auto">
+          <h3 className="px-3 pt-4 pb-2 text-[#949ba4] text-xs font-semibold uppercase tracking-wide">
+            Members — {server.member_ids.length}
+          </h3>
+          <div className="px-2 pb-4 space-y-0.5">
+            {server.member_ids.map(id => {
+              const member = userCache[id]
+              const initial = member ? member.username[0].toUpperCase() : '?'
+              const name = member ? member.username : id.slice(0, 8)
+              const isOwner = id === server.owner_id
               return (
-                <div key={msg.message_id} className="flex items-start gap-3 px-2 py-1 rounded hover:bg-[#2e3035] group">
+                <div key={id} className="flex items-center gap-2 px-1 py-1.5 rounded hover:bg-[#35373c] transition-colors">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#5865f2] flex items-center justify-center text-white text-sm font-bold">
                     {initial}
                   </div>
-                  <div className="min-w-0">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-[#f2f3f5] text-sm font-medium">{name}</span>
-                      <span className="text-[#4e5058] text-xs">{time}</span>
-                    </div>
-                    <div className="text-[#dcddde] text-sm break-words">{msg.content}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[#b5bac1] text-sm truncate">{name}</div>
+                    {isOwner && (
+                      <div className="text-[#f0b132] text-xs leading-none">Owner</div>
+                    )}
                   </div>
                 </div>
               )
-            })
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-      )}
+            })}
+          </div>
+        </aside>
 
-      {/* ── Compose / Message bar ── */}
-      <div className="flex-shrink-0 px-4 pb-4 pt-2">
-        {view === 'posts' ? (
-          <button
-            onClick={() => setShowCreatePost(true)}
-            className="w-full bg-[#383a40] text-[#6d6f78] rounded-lg px-4 py-2.5 text-left hover:bg-[#404249] transition-colors text-sm"
-          >
-            Create a new post...
-          </button>
-        ) : (
-          <form onSubmit={handleSendMessage} className="flex items-center gap-2 bg-[#383a40] rounded-full px-4 py-2">
-            <input
-              value={messageInput}
-              onChange={e => setMessageInput(e.target.value)}
-              placeholder="Type a message..."
-              className="flex-1 bg-transparent text-[#dcddde] placeholder-[#6d6f78] text-sm outline-none"
-            />
-            <button
-              type="submit"
-              disabled={sendingMsg || !messageInput.trim()}
-              className="flex-shrink-0 w-7 h-7 bg-[#5865f2] hover:bg-[#4752c4] disabled:opacity-40 disabled:cursor-not-allowed rounded-full flex items-center justify-center transition-colors"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-white">
-                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-              </svg>
-            </button>
-          </form>
-        )}
       </div>
 
       {showCreatePost && (

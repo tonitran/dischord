@@ -71,3 +71,9 @@ The schema is applied automatically via `store.ApplySchema()` on backend startup
 ## Testing Conventions
 
 Handler tests use a `testStore(t)` helper (defined in `handlers/testdb_test.go`) that opens a connection to `TEST_DATABASE_URL` and calls `t.Cleanup(store.TruncateAll)` to reset state between tests. Integration tests in `integration_tests/` follow the same pattern with their own `testdb_test.go`.
+
+## Session End
+
+At the end of every session, update the auto-memory files under
+`/Users/tonitran/.claude/projects/-Users-tonitran-dev-Dischord/memory/`
+with any new knowledge gained — architectural decisions, key file paths, patterns, or solutions to tricky problems. Keep `MEMORY.md` concise (under 200 lines); put detailed notes in topic-specific files linked from it.
