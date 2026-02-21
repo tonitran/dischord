@@ -20,18 +20,18 @@ export default function Sidebar({
   onCreateServer,
   onJoinServer,
 }: Props) {
-  const [friends, setFriends] = useState<User[]>([])
+  // const [friends, setFriends] = useState<User[]>([])
   const [servers, setServers] = useState<Server[]>([])
-  const [showAddFriend, setShowAddFriend] = useState(false)
-  const [friendInput, setFriendInput] = useState('')
-  const [friendError, setFriendError] = useState('')
+  // const [showAddFriend, setShowAddFriend] = useState(false)
+  // const [friendInput, setFriendInput] = useState('')
+  // const [friendError, setFriendError] = useState('')
   const [showJoinServer, setShowJoinServer] = useState(false)
   const [serverInput, setServerInput] = useState('')
   const [serverError, setServerError] = useState('')
 
-  useEffect(() => {
-    api.getFriends(currentUser.user_id).then(setFriends).catch(() => {})
-  }, [currentUser.user_id])
+  // useEffect(() => {
+  //   api.getFriends(currentUser.user_id).then(setFriends).catch(() => {})
+  // }, [currentUser.user_id])
 
   useEffect(() => {
     if (serverIds.length === 0) { setServers([]); return }
@@ -39,19 +39,19 @@ export default function Sidebar({
       .then(results => setServers(results.filter(Boolean) as Server[]))
   }, [serverIds])
 
-  const handleAddFriend = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setFriendError('')
-    try {
-      await api.addFriend(currentUser.user_id, friendInput.trim())
-      const updated = await api.getFriends(currentUser.user_id)
-      setFriends(updated)
-      setFriendInput('')
-      setShowAddFriend(false)
-    } catch (err: unknown) {
-      setFriendError(err instanceof Error ? err.message : 'Failed to add friend')
-    }
-  }
+  // const handleAddFriend = async (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   setFriendError('')
+  //   try {
+  //     await api.addFriend(currentUser.user_id, friendInput.trim())
+  //     const updated = await api.getFriends(currentUser.user_id)
+  //     setFriends(updated)
+  //     setFriendInput('')
+  //     setShowAddFriend(false)
+  //   } catch (err: unknown) {
+  //     setFriendError(err instanceof Error ? err.message : 'Failed to add friend')
+  //   }
+  // }
 
   const handleJoinServer = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -73,66 +73,9 @@ export default function Sidebar({
   return (
     <aside className="w-60 bg-[#2b2d31] flex flex-col h-screen flex-shrink-0">
 
-      {/* ── Friends ── */}
-      <div className="flex-shrink-0 pt-3">
-        <div className="px-3 pb-1 flex items-center justify-between">
-          <span className="text-xs font-semibold text-[#949ba4] uppercase tracking-wide">
-            Friends
-          </span>
-          <button
-            onClick={() => { setShowAddFriend(v => !v); setFriendError('') }}
-            className="w-5 h-5 flex items-center justify-center text-[#949ba4] hover:text-white rounded transition-colors"
-            title="Add friend"
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-              <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-            </svg>
-          </button>
-        </div>
-
-        {showAddFriend && (
-          <form onSubmit={handleAddFriend} className="px-3 pb-2">
-            <input
-              type="text"
-              value={friendInput}
-              onChange={e => setFriendInput(e.target.value)}
-              placeholder="Paste friend's user ID"
-              className="w-full bg-[#1e1f22] text-white text-xs rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#5865f2] placeholder-[#6d6f78]"
-              autoFocus
-            />
-            {friendError && <p className="text-[#f23f43] text-xs mt-1">{friendError}</p>}
-            <button
-              type="submit"
-              className="mt-1.5 w-full bg-[#5865f2] text-white text-xs rounded py-1 hover:bg-[#4752c4] transition-colors"
-            >
-              Add Friend
-            </button>
-          </form>
-        )}
-
-        <div className="px-2 max-h-44 overflow-y-auto space-y-0.5">
-          {friends.map(friend => (
-            <div
-              key={friend.user_id}
-              className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[#35373c] cursor-pointer group"
-            >
-              <div className="relative">
-                <Avatar name={friend.username} size="sm" />
-                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#23a55a] rounded-full border-2 border-[#2b2d31]" />
-              </div>
-              <span className="text-sm text-[#b5bac1] group-hover:text-white truncate">
-                {friend.username}
-              </span>
-            </div>
-          ))}
-          {friends.length === 0 && (
-            <p className="text-xs text-[#6d6f78] px-2 py-1">No friends yet</p>
-          )}
-        </div>
-      </div>
-
-      {/* divider */}
-      <div className="mx-3 my-2 border-t border-[#1e1f22]" />
+      {/* ── Friends (disabled) ── */}
+      {/* <div className="flex-shrink-0 pt-3">...</div> */}
+      {/* <div className="mx-3 my-2 border-t border-[#1e1f22]" /> */}
 
       {/* ── Servers ── */}
       <div className="flex-1 overflow-y-auto min-h-0">
