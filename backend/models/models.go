@@ -6,6 +6,7 @@ type User struct {
 	ID        string    `json:"user_id"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
+	ServerIDs []string  `json:"server_ids"`
 	CreatedAt time.Time `json:"created_at"`
 }
 

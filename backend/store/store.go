@@ -119,7 +119,22 @@ func (s *Store) GetUser(id string) (models.User, error) {
 	if errors.Is(err, sql.ErrNoRows) {
 		return models.User{}, fmt.Errorf("user %s not found", id)
 	}
-	return u, err
+	if err != nil {
+		return models.User{}, err
+	}
+	rows, err := s.db.Query(`SELECT server_id FROM server_user WHERE user_id = $1`, id)
+	if err != nil {
+		return models.User{}, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var serverID string
+		if err := rows.Scan(&serverID); err != nil {
+			return models.User{}, err
+		}
+		u.ServerIDs = append(u.ServerIDs, serverID)
+	}
+	return u, rows.Err()
 }
 
 // --- Friends ---
