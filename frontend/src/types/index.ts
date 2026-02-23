@@ -2,6 +2,7 @@ export interface User {
   user_id: string
   username: string
   email: string
+  server_ids: string[]
   created_at: string
 }
 

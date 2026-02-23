@@ -21,7 +21,12 @@ export default function App() {
 
     if (storedUserId) {
       api.getUser(storedUserId)
-        .then(user => setCurrentUser(user))
+        .then(user => {
+          setCurrentUser(user)
+          const merged = Array.from(new Set([...storedServerIds, ...(user.server_ids ?? [])]))
+          setServerIds(merged)
+          localStorage.setItem('dischord_server_ids', JSON.stringify(merged))
+        })
         .catch(() => localStorage.removeItem('dischord_user_id'))
         .finally(() => setLoadingUser(false))
     } else {
