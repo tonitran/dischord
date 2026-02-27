@@ -2,7 +2,7 @@
 
 A Discord-like forum and chat app built with Go and React. Users can create servers, post threads with voting, and chat in real time.
 
-![Dischord screenshot](screenshots/WIP-1.png)
+![Dischord screenshot](progress-journal/screenshots/2-post-votes.png)
 
 ## Prerequisites
 
