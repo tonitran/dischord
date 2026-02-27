@@ -60,6 +60,18 @@ export const api = {
   deletePost: (serverId: string, postId: string) =>
     apiFetch(`/servers/${serverId}/posts/${postId}`, { method: 'DELETE' }),
 
+  getVote: (serverId: string, postId: string, authorId: string) =>
+    apiFetch(`/servers/${serverId}/posts/${postId}/vote`, {
+      method: 'GET',
+      body: JSON.stringify({ author: authorId }),
+    }),
+
+  putVote: (serverId: string, postId: string, authorId: string, vote: number) =>
+    apiFetch(`/servers/${serverId}/posts/${postId}/vote`, {
+      method: 'PUT',
+      body: JSON.stringify({ author: authorId, vote }),
+    }),
+
   // Messages
   createMessage: (serverId: string, authorId: string, content: string) =>
     apiFetch(`/servers/${serverId}/messages`, {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { User, Post } from '../types'
 import { api } from '../api/client'
 import Avatar from './Avatar'
@@ -17,6 +17,30 @@ export default function PostCard({ post, currentUser, author, onUpdated, onDelet
   const [editBody, setEditBody] = useState(post.body)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [myVote, setMyVote] = useState<number>(0)
+  const [voteLoading, setVoteLoading] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    api.getVote(post.server_id, post.post_id, currentUser.user_id)
+      .then(v => { if (!cancelled) setMyVote(v.vote) })
+      .catch(() => { /* 404 = no vote yet, stays 0 */ })
+    return () => { cancelled = true }
+  }, [post.post_id, currentUser.user_id])
+
+  const handleVote = async (value: -1 | 1) => {
+    if (voteLoading) return
+    const next = myVote === value ? 0 : value
+    const voteDelta = next - myVote
+    setVoteLoading(true)
+    try {
+      await api.putVote(post.server_id, post.post_id, currentUser.user_id, next)
+      setMyVote(next)
+      onUpdated({ ...post, votes: post.votes + voteDelta })
+    } finally {
+      setVoteLoading(false)
+    }
+  }
 
   const isOwn = post.author_id === currentUser.user_id
   const authorName = author?.username ?? 'Unknown'
@@ -114,6 +138,41 @@ export default function PostCard({ post, currentUser, author, onUpdated, onDelet
           {post.body && (
             <p className="text-[#b5bac1] text-sm whitespace-pre-wrap leading-relaxed">{post.body}</p>
           )}
+          <div className="flex items-center gap-1 mt-2">
+            <button
+              onClick={() => handleVote(1)}
+              disabled={voteLoading}
+              className={`p-1 rounded transition-colors disabled:opacity-40 ${
+                myVote === 1
+                  ? 'text-[#57f287]'
+                  : 'text-[#6d6f78] hover:text-[#57f287] hover:bg-[#383a40]'
+              }`}
+              title="Upvote"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                <path d="M7 14l5-5 5 5H7z" />
+              </svg>
+            </button>
+            <span className={`text-xs font-semibold min-w-[1.5rem] text-center tabular-nums ${
+              post.votes > 0 ? 'text-[#57f287]' : post.votes < 0 ? 'text-[#f23f43]' : 'text-[#949ba4]'
+            }`}>
+              {post.votes}
+            </span>
+            <button
+              onClick={() => handleVote(-1)}
+              disabled={voteLoading}
+              className={`p-1 rounded transition-colors disabled:opacity-40 ${
+                myVote === -1
+                  ? 'text-[#f23f43]'
+                  : 'text-[#6d6f78] hover:text-[#f23f43] hover:bg-[#383a40]'
+              }`}
+              title="Downvote"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                <path d="M7 10l5 5 5-5H7z" />
+              </svg>
+            </button>
+          </div>
         </div>
         {isOwn && (
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 self-start">

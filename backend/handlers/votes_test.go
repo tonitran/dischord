@@ -101,6 +101,28 @@ func TestPostHandler_PutVote(t *testing.T) {
 		}
 	})
 
+	t.Run("switch upvote to downvote", func(t *testing.T) {
+		// u1 already has vote=1 from the "upvote" subtest above
+		req := httptest.NewRequest(http.MethodPut, "/servers/s1/posts/p1/vote", strings.NewReader(`{"author":"u1","vote":-1}`))
+		w := httptest.NewRecorder()
+		mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("got status %d, want %d", w.Code, http.StatusOK)
+		}
+
+		// Confirm the vote switched via GetVote
+		req2 := httptest.NewRequest(http.MethodGet, "/servers/s1/posts/p1/vote", strings.NewReader(`{"author":"u1"}`))
+		w2 := httptest.NewRecorder()
+		mux.ServeHTTP(w2, req2)
+
+		var vote models.Vote
+		json.NewDecoder(w2.Body).Decode(&vote)
+		if vote.Vote != -1 {
+			t.Errorf("got vote %d, want -1 after switching from upvote", vote.Vote)
+		}
+	})
+
 	t.Run("nonexistent post", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPut, "/servers/s1/posts/missing/vote", strings.NewReader(`{"author":"u1","vote":1}`))
 		w := httptest.NewRecorder()
