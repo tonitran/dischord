@@ -4,4 +4,5 @@
 
 # Compiled output
 backend/dischord
+backend/logs/*
 frontend/dist/
