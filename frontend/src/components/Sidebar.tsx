@@ -76,13 +76,13 @@ export default function Sidebar({
       {/* ── Servers ── */}
       <div className="flex-1 overflow-y-auto min-h-0">
         <div className="px-3 pb-1 flex items-center justify-between">
-          <span className="text-xs font-semibold text-[#949ba4] uppercase tracking-wide">
+          <span className="section-label">
             Servers
           </span>
           <div className="flex gap-1">
             <button
               onClick={() => { setShowJoinServer(v => !v); setServerError('') }}
-              className="w-5 h-5 flex items-center justify-center text-[#949ba4] hover:text-white rounded transition-colors"
+              className="btn-icon"
               title="Join server by ID"
             >
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -91,7 +91,7 @@ export default function Sidebar({
             </button>
             <button
               onClick={onCreateServer}
-              className="w-5 h-5 flex items-center justify-center text-[#949ba4] hover:text-white rounded transition-colors"
+              className="btn-icon"
               title="Create server"
             >
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -108,13 +108,13 @@ export default function Sidebar({
               value={serverInput}
               onChange={e => setServerInput(e.target.value)}
               placeholder="Paste server ID"
-              className="w-full bg-[#1e1f22] text-white text-xs rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#5865f2] placeholder-[#6d6f78]"
+              className="input-sm"
               autoFocus
             />
-            {serverError && <p className="text-[#f23f43] text-xs mt-1">{serverError}</p>}
+            {serverError && <p className="field-error">{serverError}</p>}
             <button
               type="submit"
-              className="mt-1.5 w-full bg-[#5865f2] text-white text-xs rounded py-1 hover:bg-[#4752c4] transition-colors"
+              className="btn-primary mt-1.5"
             >
               Join Server
             </button>
@@ -147,7 +147,7 @@ export default function Sidebar({
       {/* ── Friends ── */}
       <div className="flex-shrink-0 border-t border-[#1e1f22]">
         <div className="px-3 pt-2 pb-1 flex items-center justify-between">
-          <span className="text-xs font-semibold text-[#949ba4] uppercase tracking-wide">
+          <span className="section-label">
             Friends
           </span>
           <button
@@ -168,13 +168,13 @@ export default function Sidebar({
               value={friendInput}
               onChange={e => setFriendInput(e.target.value)}
               placeholder="Paste friend ID"
-              className="w-full bg-[#1e1f22] text-white text-xs rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#5865f2] placeholder-[#6d6f78]"
+              className="input-sm"
               autoFocus
             />
-            {friendError && <p className="text-[#f23f43] text-xs mt-1">{friendError}</p>}
+            {friendError && <p className="field-error">{friendError}</p>}
             <button
               type="submit"
-              className="mt-1.5 w-full bg-[#5865f2] text-white text-xs rounded py-1 hover:bg-[#4752c4] transition-colors"
+              className="btn-primary mt-1.5"
             >
               Add Friend
             </button>
@@ -188,7 +188,7 @@ export default function Sidebar({
             friends.map(friend => (
               <div
                 key={friend.user_id}
-                className="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-[#949ba4]"
+                className="list-row"
               >
                 <Avatar name={friend.username} size="sm" />
                 <span className="text-sm truncate font-medium text-white">{friend.username}</span>
@@ -223,7 +223,7 @@ export default function Sidebar({
         {/* Controls row */}
         <div className="flex gap-1">
           <button
-            className="flex-1 flex items-center justify-center gap-1 py-1 px-1 text-xs text-[#949ba4] hover:text-white hover:bg-[#35373c] rounded-md transition-colors"
+            className="btn-control"
             title="Mic (UI only)"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
@@ -232,7 +232,7 @@ export default function Sidebar({
             Mic
           </button>
           <button
-            className="flex-1 flex items-center justify-center gap-1 py-1 px-1 text-xs text-[#949ba4] hover:text-white hover:bg-[#35373c] rounded-md transition-colors"
+            className="btn-control"
             title="Audio (UI only)"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
@@ -242,7 +242,7 @@ export default function Sidebar({
           </button>
           <button
             onClick={handleCopyId}
-            className="flex-1 flex items-center justify-center gap-1 py-1 px-1 text-xs text-[#949ba4] hover:text-white hover:bg-[#35373c] rounded-md transition-colors"
+            className="btn-control"
             title="Copy your user ID"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">

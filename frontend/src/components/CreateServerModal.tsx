@@ -30,30 +30,30 @@ export default function CreateServerModal({ currentUser, onCreated, onClose }: P
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+      className="modal-backdrop"
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="bg-[#2b2d31] rounded-xl p-6 w-full max-w-md shadow-2xl">
+      <div className="modal-card max-w-md">
         <h2 className="text-xl font-bold text-white mb-1">Create a Server</h2>
         <p className="text-[#949ba4] text-sm mb-5">
           Your server is where you and your friends post and hang out. Give it a name!
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-[#b5bac1] uppercase tracking-wide mb-1.5">
+            <label className="field-label">
               Server Name
             </label>
             <input
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
-              className="w-full bg-[#1e1f22] text-white rounded-md px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#5865f2] placeholder-[#6d6f78]"
+              className="input-field"
               placeholder="My Awesome Server"
               required
               autoFocus
             />
           </div>
-          {error && <p className="text-[#f23f43] text-sm">{error}</p>}
+          {error && <p className="field-error">{error}</p>}
           <div className="flex gap-2 justify-end pt-1">
             <button
               type="button"

@@ -88,13 +88,13 @@ export default function PostCard({ post, currentUser, author, onUpdated, onDelet
           type="text"
           value={editTitle}
           onChange={e => setEditTitle(e.target.value)}
-          className="w-full bg-[#1e1f22] text-white rounded-md px-3 py-2 mb-2 focus:outline-none focus:ring-1 focus:ring-[#5865f2] text-lg font-semibold"
+          className="input-field mb-2 text-lg font-semibold"
           placeholder="Title"
         />
         <textarea
           value={editBody}
           onChange={e => setEditBody(e.target.value)}
-          className="w-full bg-[#1e1f22] text-[#dbdee1] rounded-md px-3 py-2 mb-3 focus:outline-none focus:ring-1 focus:ring-[#5865f2] resize-none"
+          className="input-field mb-3 resize-none"
           rows={4}
           placeholder="Body (optional)"
         />

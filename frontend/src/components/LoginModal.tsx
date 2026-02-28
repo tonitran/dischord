@@ -44,7 +44,7 @@ export default function LoginModal({ onLogin }: Props) {
 
   return (
     <div className="flex h-screen bg-[#313338] items-center justify-center">
-      <div className="bg-[#2b2d31] rounded-xl p-8 w-full max-w-md shadow-2xl">
+      <div className="modal-card max-w-md p-8">
         <div className="text-center mb-6">
           <div className="text-4xl mb-2">🎵</div>
           <h1 className="text-2xl font-bold text-white">Welcome to DisChord</h1>
@@ -69,37 +69,37 @@ export default function LoginModal({ onLogin }: Props) {
         {tab === 'create' ? (
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-[#b5bac1] uppercase tracking-wide mb-1.5">
+              <label className="field-label">
                 Username
               </label>
               <input
                 type="text"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                className="w-full bg-[#1e1f22] text-white rounded-md px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#5865f2] placeholder-[#6d6f78]"
+                className="input-field"
                 placeholder="cooluser123"
                 required
                 autoFocus
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#b5bac1] uppercase tracking-wide mb-1.5">
+              <label className="field-label">
                 Email
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full bg-[#1e1f22] text-white rounded-md px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#5865f2] placeholder-[#6d6f78]"
+                className="input-field"
                 placeholder="user@example.com"
                 required
               />
             </div>
-            {error && <p className="text-[#f23f43] text-sm">{error}</p>}
+            {error && <p className="field-error">{error}</p>}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#5865f2] text-white rounded-md py-2.5 font-medium hover:bg-[#4752c4] transition-colors disabled:opacity-50 mt-2"
+              className="btn-primary mt-2"
             >
               {loading ? 'Creating...' : 'Create Account'}
             </button>
@@ -107,14 +107,14 @@ export default function LoginModal({ onLogin }: Props) {
         ) : (
           <form onSubmit={handleExisting} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-[#b5bac1] uppercase tracking-wide mb-1.5">
+              <label className="field-label">
                 Your User ID
               </label>
               <input
                 type="text"
                 value={userId}
                 onChange={e => setUserId(e.target.value)}
-                className="w-full bg-[#1e1f22] text-white rounded-md px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#5865f2] placeholder-[#6d6f78] font-mono text-sm"
+                className="input-field font-mono text-sm"
                 placeholder="Paste your user ID here"
                 required
                 autoFocus
@@ -123,11 +123,11 @@ export default function LoginModal({ onLogin }: Props) {
                 Find your ID in the bottom-left of the app after logging in.
               </p>
             </div>
-            {error && <p className="text-[#f23f43] text-sm">{error}</p>}
+            {error && <p className="field-error">{error}</p>}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#5865f2] text-white rounded-md py-2.5 font-medium hover:bg-[#4752c4] transition-colors disabled:opacity-50"
+              className="btn-primary"
             >
               {loading ? 'Loading...' : 'Log In'}
             </button>

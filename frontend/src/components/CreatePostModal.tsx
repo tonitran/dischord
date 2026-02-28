@@ -32,39 +32,39 @@ export default function CreatePostModal({ serverId, currentUser, onCreated, onCl
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+      className="modal-backdrop"
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className="bg-[#2b2d31] rounded-xl p-6 w-full max-w-lg shadow-2xl">
+      <div className="modal-card max-w-lg">
         <h2 className="text-xl font-bold text-white mb-4">Create Post</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-[#b5bac1] uppercase tracking-wide mb-1.5">
+            <label className="field-label">
               Title <span className="text-[#f23f43]">*</span>
             </label>
             <input
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
-              className="w-full bg-[#1e1f22] text-white rounded-md px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#5865f2] placeholder-[#6d6f78]"
+              className="input-field"
               placeholder="What's on your mind?"
               required
               autoFocus
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[#b5bac1] uppercase tracking-wide mb-1.5">
+            <label className="field-label">
               Body
             </label>
             <textarea
               value={body}
               onChange={e => setBody(e.target.value)}
-              className="w-full bg-[#1e1f22] text-[#dbdee1] rounded-md px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#5865f2] resize-none placeholder-[#6d6f78]"
+              className="input-field resize-none"
               rows={5}
               placeholder="Add more details (optional)"
             />
           </div>
-          {error && <p className="text-[#f23f43] text-sm">{error}</p>}
+          {error && <p className="field-error">{error}</p>}
           <div className="flex gap-2 justify-end pt-1">
             <button
               type="button"

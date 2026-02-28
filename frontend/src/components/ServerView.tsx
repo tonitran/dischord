@@ -119,7 +119,7 @@ export default function ServerView({ serverId, currentUser }: Props) {
 
           {/* Search button (placeholder) */}
           <button
-            className="text-[#949ba4] hover:text-white p-1 hover:bg-[#35373c] rounded transition-colors"
+            className="btn-icon p-1 hover:bg-[#35373c]"
             title="Search posts"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
@@ -130,7 +130,7 @@ export default function ServerView({ serverId, currentUser }: Props) {
 
           {/* Pin button (placeholder) */}
           <button
-            className="text-[#949ba4] hover:text-white p-1 hover:bg-[#35373c] rounded transition-colors"
+            className="btn-icon p-1 hover:bg-[#35373c]"
             title="Pinned posts"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -152,7 +152,7 @@ export default function ServerView({ serverId, currentUser }: Props) {
 
           <button
             onClick={() => setShowCreatePost(true)}
-            className="bg-[#5865f2] text-white text-sm px-3 py-1 rounded hover:bg-[#4752c4] transition-colors flex items-center gap-1"
+            className="btn-primary-sm"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
@@ -208,7 +208,7 @@ export default function ServerView({ serverId, currentUser }: Props) {
         {/* ── Members panel ── */}
         <aside className="w-48 flex-shrink-0 border-l border-[#1e1f22] bg-[#2b2d31] flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto">
-            <h3 className="px-3 pt-4 pb-2 text-[#949ba4] text-xs font-semibold uppercase tracking-wide">
+            <h3 className="section-label px-3 pt-4 pb-2">
               Members — {server.member_ids.length}
             </h3>
             <div className="px-2 pb-4 space-y-0.5">
@@ -218,7 +218,7 @@ export default function ServerView({ serverId, currentUser }: Props) {
                 const name = member ? member.username : id.slice(0, 8)
                 const isOwner = id === server.owner_id
                 return (
-                  <div key={id} className="flex items-center gap-2 px-1 py-1.5 rounded hover:bg-[#35373c] transition-colors">
+                  <div key={id} className="list-row gap-2 px-1">
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#5865f2] flex items-center justify-center text-white text-sm font-bold">
                       {initial}
                     </div>
