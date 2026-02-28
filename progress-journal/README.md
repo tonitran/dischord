@@ -23,7 +23,7 @@ The bottom half of the sketch captured formal requirements:
 - Sign up
 - Create a server ✅
 - Join a server
-- DM others / add as friend
+- DM others / add as friend ✅
 - Post in a server ✅
 
 **System requirements:**
@@ -148,6 +148,8 @@ The third iteration added a right-side **Server Members** panel — a list of me
 
 ![Post votes screenshot](screenshots/2-post-votes.png)
 
+![Friends list screenshot](screenshots/3-friends-list.png)
+
 The app is functional. Here's what's been built:
 
 ### Backend (Go)
@@ -158,7 +160,7 @@ The app is functional. Here's what's been built:
 ### Frontend (React + TypeScript + Tailwind)
 - Dark Discord-style theme
 - **Login flow:** create a new user or paste an existing user ID
-- **Sidebar:** servers list with add/join by ID; user panel at bottom with Mic / Audio / Copy ID
+- **Sidebar:** friends list (add by ID, scrollable); servers list with add/join by ID; user panel at bottom with Mic / Audio / Copy ID
 - **ServerView:** Posts tab (forum-style thread feed) and Chat tab (messages)
 - **PostCard:** displays author, timestamp, title, body, and a vote strip (▲ aggregate ▼)
   - Own posts show edit/delete controls on hover
@@ -167,7 +169,7 @@ The app is functional. Here's what's been built:
 
 ### What's still to do (from original feature list)
 - [ ] Join server by invite (currently: paste ID directly)
-- [ ] DM friends / add friends from within the UI
+- [ ] DM friends
 - [ ] Image post support
 - [ ] Pin posts
 - [ ] Polls
