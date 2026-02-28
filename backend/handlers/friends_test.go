@@ -11,7 +11,7 @@ import (
 	"github.com/tonitran/dischord/store"
 )
 
-func setupFriendsTest(t *testing.T) (*store.Store, *http.ServeMux) {
+func setupFriendsTest(t *testing.T) (*store.Database, *http.ServeMux) {
 	s := testStore(t)
 	h := &FriendHandler{Store: s}
 

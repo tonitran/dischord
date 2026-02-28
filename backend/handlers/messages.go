@@ -10,7 +10,7 @@ import (
 )
 
 type MessageHandler struct {
-	Store *store.Store
+	Store *store.Database
 }
 
 func (h *MessageHandler) Create(w http.ResponseWriter, r *http.Request) {

@@ -11,7 +11,7 @@ import (
 	"github.com/tonitran/dischord/store"
 )
 
-func setupMessagesTest(t *testing.T) (*store.Store, *http.ServeMux) {
+func setupMessagesTest(t *testing.T) (*store.Database, *http.ServeMux) {
 	s := testStore(t)
 	h := &MessageHandler{Store: s}
 

@@ -10,7 +10,7 @@ import (
 )
 
 type ServerHandler struct {
-	Store *store.Store
+	Store *store.Database
 }
 
 func (h *ServerHandler) Create(w http.ResponseWriter, r *http.Request) {

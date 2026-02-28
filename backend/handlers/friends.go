@@ -8,7 +8,7 @@ import (
 )
 
 type FriendHandler struct {
-	Store *store.Store
+	Store *store.Database
 }
 
 func (h *FriendHandler) Add(w http.ResponseWriter, r *http.Request) {

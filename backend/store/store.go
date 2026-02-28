@@ -9,12 +9,12 @@ import (
 	"github.com/tonitran/dischord/models"
 )
 
-type Store struct {
+type Database struct {
 	db *sql.DB
 }
 
 // Open opens a Postgres connection, applies the schema, and returns a Store.
-func Open(connStr string) (*Store, error) {
+func Open(connStr string) (*Database, error) {
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return nil, err
@@ -31,8 +31,8 @@ func Open(connStr string) (*Store, error) {
 }
 
 // New wraps an existing *sql.DB. Schema must be applied separately via ApplySchema.
-func New(db *sql.DB) *Store {
-	return &Store{db: db}
+func New(db *sql.DB) *Database {
+	return &Database{db: db}
 }
 
 // ApplySchema creates all tables if they don't exist.
@@ -100,7 +100,7 @@ func isDuplicateKey(err error) bool {
 
 // --- Users ---
 
-func (s *Store) CreateUser(u models.User) error {
+func (s *Database) CreateUser(u models.User) error {
 	_, err := s.db.Exec(
 		`INSERT INTO users (id, username, email, created_at) VALUES ($1, $2, $3, $4)`,
 		u.ID, u.Username, u.Email, u.CreatedAt,
@@ -111,7 +111,7 @@ func (s *Store) CreateUser(u models.User) error {
 	return err
 }
 
-func (s *Store) GetUser(id string) (models.User, error) {
+func (s *Database) GetUser(id string) (models.User, error) {
 	var u models.User
 	err := s.db.QueryRow(
 		`SELECT id, username, email, created_at FROM users WHERE id = $1`, id,
@@ -139,7 +139,7 @@ func (s *Store) GetUser(id string) (models.User, error) {
 
 // --- Friends ---
 
-func (s *Store) AddFriend(userID, friendID string) error {
+func (s *Database) AddFriend(userID, friendID string) error {
 	var count int
 	if err := s.db.QueryRow(
 		`SELECT COUNT(*) FROM users WHERE id = $1 OR id = $2`, userID, friendID,
@@ -156,7 +156,7 @@ func (s *Store) AddFriend(userID, friendID string) error {
 	return err
 }
 
-func (s *Store) GetFriends(userID string) ([]models.User, error) {
+func (s *Database) GetFriends(userID string) ([]models.User, error) {
 	rows, err := s.db.Query(`
 		SELECT u.id, u.username, u.email, u.created_at
 		FROM users u
@@ -180,7 +180,7 @@ func (s *Store) GetFriends(userID string) ([]models.User, error) {
 
 // --- Posts ---
 
-func (s *Store) CreatePost(p models.Post) error {
+func (s *Database) CreatePost(p models.Post) error {
 	_, err := s.db.Exec(
 		`INSERT INTO posts (id, server_id, author_id, title, body, created_at, updated_at)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7)`,
@@ -192,7 +192,7 @@ func (s *Store) CreatePost(p models.Post) error {
 	return err
 }
 
-func (s *Store) GetPost(serverID, id string) (models.Post, error) {
+func (s *Database) GetPost(serverID, id string) (models.Post, error) {
 	var p models.Post
 	err := s.db.QueryRow(`
 		SELECT p.id, p.server_id, p.author_id, p.title, p.body,
@@ -209,7 +209,7 @@ func (s *Store) GetPost(serverID, id string) (models.Post, error) {
 	return p, err
 }
 
-func (s *Store) UpdatePost(p models.Post) error {
+func (s *Database) UpdatePost(p models.Post) error {
 	res, err := s.db.Exec(
 		`UPDATE posts SET title = $1, body = $2, updated_at = $3 WHERE id = $4`,
 		p.Title, p.Body, p.UpdatedAt, p.ID,
@@ -223,7 +223,7 @@ func (s *Store) UpdatePost(p models.Post) error {
 	return nil
 }
 
-func (s *Store) DeletePost(id string) error {
+func (s *Database) DeletePost(id string) error {
 	res, err := s.db.Exec(`DELETE FROM posts WHERE id = $1`, id)
 	if err != nil {
 		return err
@@ -234,7 +234,7 @@ func (s *Store) DeletePost(id string) error {
 	return nil
 }
 
-func (s *Store) GetVote(postID, authorID string) (models.Vote, error) {
+func (s *Database) GetVote(postID, authorID string) (models.Vote, error) {
 	var v models.Vote
 	err := s.db.QueryRow(
 		`SELECT post_id, author_id, vote FROM votes WHERE post_id = $1 AND author_id = $2`,
@@ -246,7 +246,7 @@ func (s *Store) GetVote(postID, authorID string) (models.Vote, error) {
 	return v, err
 }
 
-func (s *Store) PostVote(postID, authorID string, amount int) error {
+func (s *Database) PostVote(postID, authorID string, amount int) error {
 	var exists bool
 	if err := s.db.QueryRow(
 		`SELECT EXISTS(SELECT 1 FROM posts WHERE id = $1)`, postID,
@@ -265,7 +265,7 @@ func (s *Store) PostVote(postID, authorID string, amount int) error {
 
 // --- Servers ---
 
-func (s *Store) CreateServer(srv models.Server) error {
+func (s *Database) CreateServer(srv models.Server) error {
 	_, err := s.db.Exec(
 		`INSERT INTO servers (id, name, owner_id, created_at) VALUES ($1, $2, $3, $4)`,
 		srv.ID, srv.Name, srv.OwnerID, srv.CreatedAt,
@@ -276,7 +276,7 @@ func (s *Store) CreateServer(srv models.Server) error {
 	return err
 }
 
-func (s *Store) GetServer(id string) (models.Server, error) {
+func (s *Database) GetServer(id string) (models.Server, error) {
 	var srv models.Server
 	err := s.db.QueryRow(
 		`SELECT id, name, owner_id, created_at FROM servers WHERE id = $1`, id,
@@ -320,7 +320,7 @@ func (s *Store) GetServer(id string) (models.Server, error) {
 
 // --- Server Members ---
 
-func (s *Store) JoinServer(serverID, userID string) error {
+func (s *Database) JoinServer(serverID, userID string) error {
 	var count int
 	if err := s.db.QueryRow(
 		`SELECT COUNT(*) FROM servers WHERE id = $1`, serverID,
@@ -345,7 +345,7 @@ func (s *Store) JoinServer(serverID, userID string) error {
 	return err
 }
 
-func (s *Store) GetServerMembers(serverID string) ([]models.User, error) {
+func (s *Database) GetServerMembers(serverID string) ([]models.User, error) {
 	rows, err := s.db.Query(`
 		SELECT u.id, u.username, u.email, u.created_at
 		FROM users u
@@ -369,7 +369,7 @@ func (s *Store) GetServerMembers(serverID string) ([]models.User, error) {
 
 // --- Messages ---
 
-func (s *Store) CreateMessage(m models.Message) error {
+func (s *Database) CreateMessage(m models.Message) error {
 	var exists bool
 	if err := s.db.QueryRow(
 		`SELECT EXISTS(SELECT 1 FROM servers WHERE id = $1)`, m.ServerID,
@@ -386,7 +386,7 @@ func (s *Store) CreateMessage(m models.Message) error {
 	return err
 }
 
-func (s *Store) GetMessagesByServer(serverID string) []models.Message {
+func (s *Database) GetMessagesByServer(serverID string) []models.Message {
 	rows, err := s.db.Query(
 		`SELECT id, server_id, author_id, content, created_at FROM messages WHERE server_id = $1 ORDER BY created_at`,
 		serverID,

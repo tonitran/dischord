@@ -7,7 +7,7 @@ import (
 	"github.com/tonitran/dischord/store"
 )
 
-func New(s *store.Store) http.Handler {
+func New(s *store.Database) http.Handler {
 	mux := http.NewServeMux()
 
 	users := &handlers.UserHandler{Store: s}

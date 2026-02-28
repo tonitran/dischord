@@ -12,7 +12,7 @@ import (
 )
 
 type UserHandler struct {
-	Store *store.Store
+	Store *store.Database
 }
 
 func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {

@@ -8,7 +8,7 @@ import (
 	"github.com/tonitran/dischord/store"
 )
 
-func testStore(t *testing.T) *store.Store {
+func testStore(t *testing.T) *store.Database {
 	t.Helper()
 	connStr := os.Getenv("TEST_DATABASE_URL")
 	if connStr == "" {

@@ -8,7 +8,7 @@ import (
 )
 
 type VoteHandler struct {
-	Store *store.Store
+	Store *store.Database
 }
 
 func (h *VoteHandler) GetVote(w http.ResponseWriter, r *http.Request) {

@@ -11,7 +11,7 @@ import (
 	"github.com/tonitran/dischord/store"
 )
 
-func setupVotesTest(t *testing.T) (*store.Store, *http.ServeMux) {
+func setupVotesTest(t *testing.T) (*store.Database, *http.ServeMux) {
 	s := testStore(t)
 	h := &VoteHandler{Store: s}
 

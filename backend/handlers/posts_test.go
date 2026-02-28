@@ -11,7 +11,7 @@ import (
 	"github.com/tonitran/dischord/store"
 )
 
-func setupPostsTest(t *testing.T) (*store.Store, *http.ServeMux) {
+func setupPostsTest(t *testing.T) (*store.Database, *http.ServeMux) {
 	s := testStore(t)
 	h := &PostHandler{Store: s}
 

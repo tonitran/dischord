@@ -11,7 +11,7 @@ import (
 	"github.com/tonitran/dischord/store"
 )
 
-func setupServersTest(t *testing.T) (*store.Store, *http.ServeMux) {
+func setupServersTest(t *testing.T) (*store.Database, *http.ServeMux) {
 	s := testStore(t)
 	h := &ServerHandler{Store: s}
 
