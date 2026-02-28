@@ -10,7 +10,6 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [serverIds, setServerIds] = useState<string[]>([])
   const [currentServerId, setCurrentServerId] = useState<string | null>(null)
-  const [view, setView] = useState<'posts' | 'messages'>('posts')
   const [showCreateServer, setShowCreateServer] = useState(false)
   const [loadingUser, setLoadingUser] = useState(true)
 
@@ -44,7 +43,6 @@ export default function App() {
     setServerIds(newIds)
     localStorage.setItem('dischord_server_ids', JSON.stringify(newIds))
     setCurrentServerId(server.server_id)
-    setView('posts')
     setShowCreateServer(false)
   }
 
@@ -55,12 +53,10 @@ export default function App() {
       localStorage.setItem('dischord_server_ids', JSON.stringify(newIds))
     }
     setCurrentServerId(serverId)
-    setView('posts')
   }
 
   const handleSelectServer = (id: string) => {
     setCurrentServerId(id)
-    setView('posts')
   }
 
   if (loadingUser) {
@@ -91,8 +87,6 @@ export default function App() {
           <ServerView
             serverId={currentServerId}
             currentUser={currentUser}
-            view={view}
-            onSetView={setView}
           />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-center gap-4">

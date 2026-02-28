@@ -68,6 +68,31 @@ cd frontend && npm run preview  # Preview production build
 
 The schema is applied automatically via `store.ApplySchema()` on backend startup. The raw SQL is at `store/schema.sql` for reference.
 
+## Backend API Reference (base: http://localhost:8080)
+- POST /users, GET /users/{id} — GET returns `server_ids: []string`
+- POST /users/{id}/friends, GET /users/{id}/friends
+- POST /servers, GET /servers/{id} (server includes post_ids array)
+- POST /servers/{sid}/posts, GET /servers/{sid}/posts/{id}, PUT, DELETE
+- POST /servers/{sid}/messages, GET /servers/{sid}/messages
+- GET /servers/{sid}/posts/{id}/vote — body `{ author }` → `{ post_id, author_id, vote }` (404 if no vote yet)
+- PUT /servers/{sid}/posts/{id}/vote — body `{ author, vote }` → updated Post (with aggregate `votes`)
+
+No auth — author_id/owner_id passed in request body. Votes: integer per (post_id, author_id) pair; aggregate shown on post as `votes` field.
+
+## Key Decisions & UI Conventions
+- Login = create user or paste existing user ID
+- Sidebar: friends list (top) + servers list (middle) + user panel (bottom)
+- ServerView: Posts tab (forum-style) + Chat tab (messages)
+- Posts: own posts show edit/delete on hover; all posts show upvote/downvote strip
+- Vote strip: ▲ (green active) · aggregate count (green/red/grey) · ▼ (red active), below body
+- Vote toggle: clicking the active vote sends 0 (cancel); switching sends the new value directly
+- `Post` type includes `votes: number` (aggregate); per-user vote fetched separately on mount via `getVote`
+- `onUpdated` callback reused to propagate new aggregate from `putVote` response back to ServerView
+- getVote 404 is silently ignored (no vote yet = stays 0)
+- localStorage keys: `dischord_user_id`, `dischord_server_ids`
+- On user load, App.tsx merges localStorage server IDs + backend `server_ids` (deduped) → localStorage updated
+- Discord-like dark theme (hex colors, no custom Tailwind config)
+
 ## Testing Conventions
 
 Handler tests use a `testStore(t)` helper (defined in `handlers/testdb_test.go`) that opens a connection to `TEST_DATABASE_URL` and calls `t.Cleanup(store.TruncateAll)` to reset state between tests. Integration tests in `integration_tests/` follow the same pattern with their own `testdb_test.go`.

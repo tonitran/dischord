@@ -148,9 +148,6 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* divider */}
-      <div className="mx-3 border-t border-[#1e1f22]" />
-
       {/* ── User panel ── */}
       <div className="flex-shrink-0 bg-[#232428] px-2 py-2">
         <div className="flex items-center gap-2 mb-2">
